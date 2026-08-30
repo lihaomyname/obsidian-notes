@@ -4,12 +4,16 @@ tags:
   - AI-Agent
   - ReAct
   - LLM
-source: https://waylandz.com/ai-agent-book/第02章-ReAct循环/
+sources:
+  - https://waylandz.com/ai-agent-book/第02章-ReAct循环/
+  - https://datawhalechina.github.io/hello-agents/#/./chapter4/第四章%20智能体经典范式构建
 ---
 
 # ReAct 循环：核心内容与代码示例
 
 > ReAct 的核心不是让模型一次性给出答案，而是让它每次只决定下一步：**推理（Reason）→ 行动（Act）→ 观察（Observe）**，重复循环，直到任务完成或触发停止条件。
+
+相关笔记：[[智能体经典范式]] · [[Plan-and-Solve]] · [[Reflection]]
 
 ## 一、ReAct 是什么
 
@@ -34,6 +38,22 @@ Observe：客观记录工具结果
 普通对话模型倾向于根据已有知识一次性生成完整答案；ReAct 则强制模型停下来，通过搜索、读文件、调用 API 或执行代码获取外部事实，再根据结果调整下一步。
 
 ReAct 并不保证答案正确。它真正带来的变化是：把不可检查的“直接猜测”，变成带有工具结果和中间状态的“查找、验证、修正”。
+
+### 形式化描述
+
+在第 `t` 轮，模型策略 `π` 根据原始问题 `q` 和此前的行动—观察轨迹，生成当前决策：
+
+$$
+(th_t, a_t) = \pi(q, (a_1,o_1), \ldots, (a_{t-1},o_{t-1}))
+$$
+
+工具或环境执行动作后返回观察：
+
+$$
+o_t = T(a_t)
+$$
+
+其中 `th_t` 是本轮决策摘要，`a_t` 是动作，`o_t` 是外部环境返回的事实。新的 `(a_t, o_t)` 被加入状态，成为下一轮推理的输入。
 
 ## 二、为什么需要 ReAct
 
@@ -337,6 +357,15 @@ def context_observations(observations: list, window: int = 5):
 
 ## 九、常见陷阱
 
+### 先认识 ReAct 的固有边界
+
+| 局限 | 原因 | 工程应对 |
+| --- | --- | --- |
+| 依赖模型能力 | 模型可能不遵循格式或选错工具 | 使用结构化输出、参数校验和更稳定的模型 |
+| 串行成本较高 | 每轮至少包含一次模型调用和一次工具调用 | 缓存结果，并行执行互不依赖的动作 |
+| 提示词脆弱 | 文案变化可能影响动作格式 | 使用 JSON Schema 或原生 Tool Calling |
+| 缺少全局视角 | “走一步看一步”可能陷入局部最优 | 复杂任务与 Plan-and-Solve 组合 |
+
 ### 1. 无限循环
 
 **表现**：重复搜索、重复读取相同内容。
@@ -372,6 +401,14 @@ def observations_converged(observations: list[str]) -> bool:
 
 ReAct 只是提高了获取证据、纠错和追踪的能力。工具可能返回错误数据，模型也可能误读观察。生产系统仍然需要来源校验、权限控制、结果验收和人工介入机制。
 
+### 调试顺序
+
+1. 打印最终发送给模型的完整提示和必要上下文。
+2. 保存模型未经解析的原始输出，区分模型错误与解析器错误。
+3. 检查工具名、输入参数、返回结构和异常信息。
+4. 必要时加入一两个成功的 Thought—Action—Observation 示例。
+5. 将温度调低以提高格式稳定性，再评估是否需要更换模型。
+
 ## 十、落地检查清单
 
 - [ ] 每轮只选择一个关键的下一步动作
@@ -392,5 +429,6 @@ ReAct 只是提高了获取证据、纠错和追踪的能力。工具可能返�
 
 - [第 2 章：ReAct 循环](https://waylandz.com/ai-agent-book/%E7%AC%AC02%E7%AB%A0-ReAct%E5%BE%AA%E7%8E%AF/)
 - [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629)
+- [Hello-Agents：第四章 智能体经典范式构建](https://datawhalechina.github.io/hello-agents/#/./chapter4/%E7%AC%AC%E5%9B%9B%E7%AB%A0%20%E6%99%BA%E8%83%BD%E4%BD%93%E7%BB%8F%E5%85%B8%E8%8C%83%E5%BC%8F%E6%9E%84%E5%BB%BA)
 
-> 本文是对原章节的结构化总结；Python 示例根据章节中的概念和 Go 伪代码重新整理，并非原文代码的逐字复制。
+> 本文综合 Wayland Zhang 与 Datawhale 两份资料整理；Python 示例是面向工程实践的改写，并非原文代码的逐字复制。

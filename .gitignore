@@ -1,0 +1,11 @@
+.DS_Store
+.trash/
+.obsidian/workspace*.json
+.obsidian/cache/
+.obsidian/plugins/
+.obsidian/themes/
+.env
+.env.*
+!.env.example
+*.pem
+*.key

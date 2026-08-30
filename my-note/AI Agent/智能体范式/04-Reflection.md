@@ -72,41 +72,54 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Revision:
+    # 某一轮生成的候选结果。
     output: str
+    # 评审后回填的改进意见；初稿生成时暂时为空。
     feedback: str | None = None
 
 
 @dataclass
 class ReflectionState:
     task: str
+    # 保存版本轨迹，便于比较改动和追踪收敛过程。
     revisions: list[Revision] = field(default_factory=list)
 
 
 class ReflectionAgent:
     def __init__(self, generator, reviewer, max_iterations: int = 3):
+        # 生成器负责产出，评审器依据标准独立检查。
         self.generator = generator
         self.reviewer = reviewer
+        # 硬上限防止反思循环无限消耗资源。
         self.max_iterations = max_iterations
 
     def run(self, task: str, criteria: list[str]) -> str:
         state = ReflectionState(task=task)
+
+        # Execution：先生成一版可供评审的初稿。
         draft = self.generator.create(task)
         state.revisions.append(Revision(output=draft))
 
         for _ in range(self.max_iterations):
+            # Reflection：逐项依据验收标准审查当前版本。
             review = self.reviewer.review(task, draft, criteria)
             state.revisions[-1].feedback = review.feedback
 
+            # 全部硬性标准通过后立即停止，避免无意义润色。
             if review.passed:
                 return draft
 
+            # Refinement：将原任务、当前版本和反馈一起交给生成器。
             draft = self.generator.refine(
                 task=task,
                 previous_output=draft,
                 feedback=review.feedback,
             )
+
+            # 新版本单独入库，保留完整的迭代轨迹。
             state.revisions.append(Revision(output=draft))
 
+        # 达到迭代上限时返回目前最新的版本。
         return draft
 ```
 

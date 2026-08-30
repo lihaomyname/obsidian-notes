@@ -160,14 +160,18 @@ from typing import Any
 
 @dataclass
 class Action:
+    # 要调用的工具名称，例如 web_search。
     tool: str
+    # 传给工具的结构化参数。
     arguments: dict[str, Any]
 
 
 @dataclass
 class Step:
+    # 只保存简短、可审计的决策摘要，不要求完整私有推理。
     thought: str
     action: Action | None
+    # 工具执行后再回填观察结果。
     observation: Any = None
     completed: bool = False
 
@@ -175,11 +179,13 @@ class Step:
 @dataclass
 class AgentState:
     goal: str
+    # default_factory 确保每个 AgentState 都有独立的步骤列表。
     steps: list[Step] = field(default_factory=list)
     final_answer: str | None = None
 
 
 def react_loop(goal: str, max_iterations: int = 10) -> str:
+    # 一个任务对应一份独立状态，避免不同会话互相污染。
     state = AgentState(goal=goal)
 
     for _ in range(max_iterations):
@@ -187,10 +193,12 @@ def react_loop(goal: str, max_iterations: int = 10) -> str:
         step = reason(state)
         state.steps.append(step)
 
+        # 模型声称完成后，统一从已收集的证据构造最终答案。
         if step.completed:
             state.final_answer = build_final_answer(state)
             return state.final_answer
 
+        # 未完成却没有动作属于非法状态，应立即暴露问题。
         if step.action is None:
             raise RuntimeError("模型未结束任务，也没有给出动作")
 
@@ -204,6 +212,7 @@ def react_loop(goal: str, max_iterations: int = 10) -> str:
             "error": result.error,
         }
 
+    # 达到硬上限时返回已有进度，而不是继续无限循环。
     return build_partial_answer(state, reason="达到最大循环次数")
 ```
 
@@ -211,6 +220,7 @@ def react_loop(goal: str, max_iterations: int = 10) -> str:
 
 ```python
 TOOLS = {
+    # 白名单限制 Agent 只能调用已经注册和授权的工具。
     "web_search": web_search,
     "read_file": read_file,
     "run_code": run_code,
@@ -218,9 +228,12 @@ TOOLS = {
 
 
 def execute(action: Action):
+    # 根据模型给出的名称从注册表中查找真实函数。
     tool = TOOLS.get(action.tool)
     if tool is None:
         raise ValueError(f"未知工具：{action.tool}")
+
+    # 将结构化参数展开为函数的关键字参数。
     return tool(**action.arguments)
 ```
 
@@ -289,9 +302,11 @@ class LoopConfig:
 
 
 def should_stop(state, config: LoopConfig) -> tuple[bool, str | None]:
+    # 用户取消具有最高优先级。
     if state.user_cancelled:
         return True, "用户取消"
 
+    # 预算和超时是不可绕过的硬护栏。
     if state.tokens_used >= config.token_budget:
         return True, "Token 预算耗尽"
 
@@ -301,12 +316,15 @@ def should_stop(state, config: LoopConfig) -> tuple[bool, str | None]:
     if state.iteration >= config.max_iterations:
         return True, "达到最大迭代数"
 
+    # 最低轮数用于防止模型未获取任何证据便直接结束。
     if state.iteration < config.min_iterations:
         return False, None
 
+    # 只有任务完成且证据充分，才接受模型的完成声明。
     if state.task_completed and state.has_required_evidence:
         return True, "任务完成"
 
+    # 连续观察没有新信息时提前终止，避免原地打转。
     if observations_converged(state.observations):
         return True, "观察结果收敛，无新进展"
 
@@ -329,7 +347,9 @@ def should_stop(state, config: LoopConfig) -> tuple[bool, str | None]:
 
 ```python
 def context_observations(observations: list, window: int = 5):
+    # 最近结果保留原文，供下一轮精确判断。
     recent = observations[-window:]
+    # 更早的结果压缩为摘要，降低上下文成本。
     older = observations[:-window]
     return {
         "older_summary": summarize(older) if older else None,
@@ -374,8 +394,11 @@ def context_observations(observations: list, window: int = 5):
 
 ```python
 def observations_converged(observations: list[str]) -> bool:
+    # 少于两次观察时无法判断是否重复。
     if len(observations) < 2:
         return False
+
+    # 阈值越高，只有越相似的结果才会被视为收敛。
     return similarity(observations[-1], observations[-2]) > 0.95
 ```
 

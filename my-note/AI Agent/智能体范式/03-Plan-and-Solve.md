@@ -68,15 +68,18 @@ from dataclasses import dataclass, field
 class PlanState:
     question: str
     plan: list[str]
+    # 按执行顺序保存结果，后续步骤可以引用前置产物。
     results: list[str] = field(default_factory=list)
 
 
 class PlanAndSolveAgent:
     def __init__(self, planner, executor):
+        # planner 只负责拆解任务，executor 只负责执行步骤。
         self.planner = planner
         self.executor = executor
 
     def run(self, question: str) -> str:
+        # Plan：一次性生成有序、可执行的步骤列表。
         plan = self.planner.plan(question)
         if not plan:
             raise RuntimeError("规划器没有生成有效计划")
@@ -84,14 +87,18 @@ class PlanAndSolveAgent:
         state = PlanState(question=question, plan=plan)
 
         for index, step in enumerate(plan):
+            # Solve：执行器始终看到原问题、完整计划和历史结果。
             result = self.executor.solve_step(
                 question=question,
                 full_plan=plan,
                 previous_results=state.results,
                 current_step=step,
             )
+
+            # 当前结果会成为后续步骤的输入。
             state.results.append(result)
 
+        # 不直接返回最后一步文本，而是统一汇总所有步骤。
         return self.executor.synthesize(state)
 ```
 

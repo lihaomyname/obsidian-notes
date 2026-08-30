@@ -12,7 +12,7 @@ source: https://datawhalechina.github.io/hello-agents/#/./chapter4/第四章%20�
 
 > Reflection 是一种事后自我校正循环：先生成初稿，再让评审角色指出具体问题，最后依据反馈生成修订稿，直到通过验收或达到迭代上限。
 
-相关笔记：[[智能体经典范式]] · [[ReAct循环]] · [[Plan-and-Solve]]
+相关笔记：[[01-智能体经典范式|智能体经典范式]] · [[02-ReAct循环|ReAct]] · [[03-Plan-and-Solve|Plan-and-Solve]]
 
 ## 一、核心循环
 

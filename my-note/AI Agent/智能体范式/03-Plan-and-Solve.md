@@ -12,7 +12,7 @@ source: https://datawhalechina.github.io/hello-agents/#/./chapter4/第四章%20�
 
 > Plan-and-Solve 把复杂任务拆成两个阶段：规划器生成完整、结构化的步骤，执行器携带历史状态逐步完成每个子任务。
 
-相关笔记：[[智能体经典范式]] · [[ReAct循环]] · [[Reflection]]
+相关笔记：[[01-智能体经典范式|智能体经典范式]] · [[02-ReAct循环|ReAct]] · [[04-Reflection|Reflection]]
 
 ## 一、核心流程
 

@@ -13,7 +13,7 @@ sources:
 
 > ReAct 的核心不是让模型一次性给出答案，而是让它每次只决定下一步：**推理（Reason）→ 行动（Act）→ 观察（Observe）**，重复循环，直到任务完成或触发停止条件。
 
-相关笔记：[[智能体经典范式]] · [[Plan-and-Solve]] · [[Reflection]]
+相关笔记：[[01-智能体经典范式|智能体经典范式]] · [[03-Plan-and-Solve|Plan-and-Solve]] · [[04-Reflection|Reflection]]
 
 ## 一、ReAct 是什么
 

@@ -4,7 +4,7 @@
 
 ## Chatbot 与 Agent
 
-课表把差异归纳为主动性、决策流和副作用控制。链接资料进一步说明：
+课程资料把差异归纳为主动性、决策流和副作用控制。链接资料进一步说明：
 
 | Chatbot | Agent |
 | --- | --- |
@@ -28,7 +28,7 @@ Wayland 的章节使用四部分帮助建立直觉：
 
 ## Runtime、Framework、Harness
 
-课表提出 Runtime → Framework → Harness 三层视角。Deep Agents 链接的重点是：Framework 提供模型、工具和图等开发抽象；Harness 则把完成长任务所需的工程能力组装起来，例如：
+课程资料提出 Runtime → Framework → Harness 三层视角。Deep Agents 链接的重点是：Framework 提供模型、工具和图等开发抽象；Harness 则把完成长任务所需的工程能力组装起来，例如：
 
 - 上下文管理和压缩
 - 状态与检查点
@@ -41,7 +41,7 @@ Wayland 的章节使用四部分帮助建立直觉：
 
 ## AI Native 与固定流程
 
-课表把 AI Native Agent 与 Dify/Coze 等流程型系统进行区分。基于文档可以安全得出的结论是：两者主要差别在决策权放在哪里。
+课程资料把 AI Native Agent 与 Dify/Coze 等流程型系统进行区分。基于文档可以安全得出的结论是：两者主要差别在决策权放在哪里。
 
 - 固定流程：开发者预先定义大部分节点和路径，LLM 处理节点内数据。
 - AI Native Agent：模型根据当前状态选择工具和下一步，实际路径可能动态变化。
@@ -61,9 +61,8 @@ Wayland 的章节使用四部分帮助建立直觉：
 
 ## 来源与核对范围
 
-- [POPO：Agent开发学习课表](https://docs.popo.netease.com/team/pc/EHRZHAOPIN/pageDetail/5b5253077e2a43f7ac89deedfc6db29a)
 - [Hello-Agents：第一章 初识智能体](https://datawhalechina.github.io/hello-agents/#/./chapter1/%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%88%9D%E8%AF%86%E6%99%BA%E8%83%BD%E4%BD%93)
 - [AI Agent Book：Agent 的本质](https://waylandz.com/ai-agent-book/%E7%AC%AC01%E7%AB%A0-Agent%E7%9A%84%E6%9C%AC%E8%B4%A8/)
 - [Deep Agents：从 Agent Framework 到 Agent Harness](https://datawhalechina.github.io/deepagents-in-action/chapters/ch01-agent-harness/)
 
-> “Runtime → Framework → Harness”是课表采用的学习视角，不应被误解为所有 Agent 系统必须采用的唯一标准分层。
+> “Runtime → Framework → Harness”是课程采用的学习视角，不应被误解为所有 Agent 系统必须采用的唯一标准分层。

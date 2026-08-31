@@ -1,0 +1,4 @@
+interface:
+  display_name: "对话知识整理"
+  short_description: "将当前技术对话沉淀为项目内面向初学者的详细学习笔记"
+  default_prompt: "Use $conversation-learning-notes to 将当前对话中的知识点整理并保存到项目的 oh_my_learn 目录。"

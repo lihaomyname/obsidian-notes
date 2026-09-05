@@ -12,6 +12,7 @@
 
 ## Python
 
+- [抽象基类与 abstractmethod](python/abstract-base-class.md)
 - [LangGraph 控制流：条件边、并行、Send 与 Command](python/langgraph-control-flow.md)
 - [uv 使用笔记](python/uv使用笔记.md)
 

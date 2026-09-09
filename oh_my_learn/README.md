@@ -15,6 +15,7 @@
 - [抽象基类与 abstractmethod](python/abstract-base-class.md)
 - [Python 装饰器与 property：Java 开发者入门](python/decorators-and-property.md)
 - [Python 异步编程：asyncio 从入门到工程实践](python/asyncio-guide.md)
+- [Python 字符串与 strip 常用操作](python/string-guide.md)
 - [LangGraph 控制流：条件边、并行、Send 与 Command](python/langgraph-control-flow.md)
 - [uv 使用笔记](python/uv使用笔记.md)
 
